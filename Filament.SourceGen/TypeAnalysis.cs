@@ -20,7 +20,7 @@ internal static class TypeAnalysis
     public enum Wrap { None, Option, List }
 
     /// <summary>The leaf value kind under any wrapper.</summary>
-    public enum Scalar { Unsupported, Bool, Int, Long, Float, Double, String, Enum, Scriptable }
+    public enum Scalar { Unsupported, Bool, Int, Long, Float, Double, String, Enum, Scriptable, Vector2, Vector3, Color }
 
     public readonly struct MemberShape
     {
@@ -93,6 +93,12 @@ internal static class TypeAnalysis
             case SpecialType.System_Single: return Scalar.Float;
             case SpecialType.System_Double: return Scalar.Double;
             case SpecialType.System_String: return Scalar.String;
+        }
+        switch (t.ToDisplayString())
+        {
+            case "Godot.Vector2": return Scalar.Vector2;
+            case "Godot.Vector3": return Scalar.Vector3;
+            case "Godot.Color": return Scalar.Color;
         }
         return HasAttribute(t, ScriptableAttr) ? Scalar.Scriptable : Scalar.Unsupported;
     }

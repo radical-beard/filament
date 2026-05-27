@@ -156,6 +156,8 @@ public sealed class ScriptableConverterGenerator : IIncrementalGenerator
         TypeAnalysis.Scalar.String => $"DynValue.NewString({expr})",
         TypeAnalysis.Scalar.Enum => $"DynValue.NewString({expr}.ToString())",
         TypeAnalysis.Scalar.Scriptable => $"DynValue.NewTable(global::Filament.ScriptableMarshal.ToLua<{innerFqn}>({expr}, script))",
+        TypeAnalysis.Scalar.Vector2 or TypeAnalysis.Scalar.Vector3 or TypeAnalysis.Scalar.Color
+            => $"DynValue.NewTable(global::Filament.GodotMarshal.ToLua({expr}, script))",
         _ => "DynValue.Nil",
     };
 
@@ -200,6 +202,9 @@ public sealed class ScriptableConverterGenerator : IIncrementalGenerator
         TypeAnalysis.Scalar.String => $"global::Filament.ScriptableMarshal.AsString({dv}, \"{typeName}\", \"{f.Key}\")",
         TypeAnalysis.Scalar.Enum => $"global::Filament.ScriptableMarshal.AsEnum<{f.Inner}>({dv}, \"{typeName}\", \"{f.Key}\")",
         TypeAnalysis.Scalar.Scriptable => $"global::Filament.ScriptableMarshal.AsScriptable<{f.Inner}>({dv}, \"{typeName}\", \"{f.Key}\")",
+        TypeAnalysis.Scalar.Vector2 => $"global::Filament.GodotMarshal.AsVector2({dv}, \"{typeName}\", \"{f.Key}\")",
+        TypeAnalysis.Scalar.Vector3 => $"global::Filament.GodotMarshal.AsVector3({dv}, \"{typeName}\", \"{f.Key}\")",
+        TypeAnalysis.Scalar.Color => $"global::Filament.GodotMarshal.AsColor({dv}, \"{typeName}\", \"{f.Key}\")",
         _ => $"global::Filament.Result.Err(global::Filament.LuaError.FieldCoercion(\"{typeName}\", \"{f.Key}\", \"unsupported\"))",
     };
 

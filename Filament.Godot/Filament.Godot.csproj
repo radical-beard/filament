@@ -1,29 +1,27 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <!-- netstandard2.1 so a net8 Godot game (and Filament.Godot) can consume it.
-         All files use explicit usings, so ImplicitUsings stays off. -->
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <!-- net8.0 to match the Godot 4.6 .NET runtime, so the framework can be
+         loaded by a real Godot game (a net10 lib could not). -->
+    <TargetFramework>net8.0</TargetFramework>
     <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>Filament</RootNamespace>
+    <!-- Referenced libraries must ship beside a dynamically-loaded Godot game. -->
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- Pure-managed Lua interpreter (no native deps) — the locked runtime. -->
-    <PackageReference Include="MoonSharp" Version="2.0.0" />
+    <PackageReference Include="GodotSharp" Version="4.6.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Filament.Abstractions\Filament.Abstractions.csproj" />
-    <!-- Generators run at compile time only; the assembly is not linked in. -->
+    <ProjectReference Include="..\Filament.Core\Filament.Core.csproj" />
     <ProjectReference Include="..\Filament.SourceGen\Filament.SourceGen.csproj"
                       OutputItemType="Analyzer"
                       ReferenceOutputAssembly="false" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <InternalsVisibleTo Include="Filament.Tests" />
   </ItemGroup>
 
 </Project>

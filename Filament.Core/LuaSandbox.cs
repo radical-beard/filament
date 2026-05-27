@@ -13,6 +13,7 @@ public static class LuaSandbox
     {
         var script = new Script(CoreModules.Preset_HardSandbox);
         script.Options.DebugPrint = _ => { };
+        SandboxVerbs.InstallInto(script); // expose registered filament.<ns>.<verb> callables
         return script;
     }
 
