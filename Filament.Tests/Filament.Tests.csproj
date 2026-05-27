@@ -27,6 +27,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Filament.Abstractions\Filament.Abstractions.csproj" />
     <ProjectReference Include="..\Filament.Core\Filament.Core.csproj" />
+    <ProjectReference Include="..\Filament.Config\Filament.Config.csproj" />
     <!-- Plug in as analyzer/generator AND reference the assembly (so the sample
          [Scriptable] types get converters generated, and tests can `new ScriptableAnalyzer()`). -->
     <ProjectReference Include="..\Filament.SourceGen\Filament.SourceGen.csproj"

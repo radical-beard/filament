@@ -3,6 +3,7 @@
     <Project Path="demo/Filament.Demo.csproj" />
   </Folder>
   <Project Path="Filament.Abstractions/Filament.Abstractions.csproj" />
+  <Project Path="Filament.Config/Filament.Config.csproj" />
   <Project Path="Filament.Core/Filament.Core.csproj" />
   <Project Path="Filament.Godot.Tests/Filament.Godot.Tests.csproj" />
   <Project Path="Filament.Godot/Filament.Godot.csproj" />
