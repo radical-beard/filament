@@ -1,0 +1,57 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - heading "Crimson Corsair — playtest" [level=1] [ref=e3]
+    - paragraph [ref=e4]: "You just played the high-seas slice. A few quick questions:"
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - generic [ref=e7]: Overall, did the build feel good to move around in? *
+        - generic [ref=e8]:
+          - generic [ref=e9] [cursor=pointer]:
+            - radio "Yes" [ref=e10]
+            - generic [ref=e11]: "Yes"
+          - generic [ref=e12] [cursor=pointer]:
+            - radio "Somewhat" [ref=e13]
+            - generic [ref=e14]: Somewhat
+          - generic [ref=e15] [cursor=pointer]:
+            - radio "No" [ref=e16]
+            - generic [ref=e17]: "No"
+      - generic [ref=e18]:
+        - generic [ref=e19]: Did dodging grant invincibility when you expected it to? *
+        - generic [ref=e20]:
+          - generic [ref=e21] [cursor=pointer]:
+            - radio "Yes" [ref=e22]
+            - generic [ref=e23]: "Yes"
+          - generic [ref=e24] [cursor=pointer]:
+            - radio "Too early" [checked] [active] [ref=e25]
+            - generic [ref=e26]: Too early
+          - generic [ref=e27] [cursor=pointer]:
+            - radio "Too late" [ref=e28]
+            - generic [ref=e29]: Too late
+          - generic [ref=e30] [cursor=pointer]:
+            - radio "No invuln at all" [ref=e31]
+            - generic [ref=e32]: No invuln at all
+        - generic [ref=e58]:
+          - generic [ref=e59]: "Describe what you experienced instead: *"
+          - textbox "e.g. I got clipped halfway through the roll..." [ref=e60]
+      - generic [ref=e33]:
+        - generic [ref=e34]: Which verbs did you actually use? (check all)
+        - generic [ref=e35]:
+          - generic [ref=e36] [cursor=pointer]:
+            - checkbox "Run" [ref=e37]
+            - generic [ref=e38]: Run
+          - generic [ref=e39] [cursor=pointer]:
+            - checkbox "Kick" [ref=e40]
+            - generic [ref=e41]: Kick
+          - generic [ref=e42] [cursor=pointer]:
+            - checkbox "Harpoon grapple" [ref=e43]
+            - generic [ref=e44]: Harpoon grapple
+      - generic [ref=e45]:
+        - generic [ref=e46]: Roughly how many times did the camera feel wrong?
+        - spinbutton [ref=e47]
+      - generic [ref=e48]:
+        - generic [ref=e49]: "One word for how the harpoon pull felt:"
+        - textbox "snappy / floaty / sluggish ..." [ref=e50]
+      - generic [ref=e51]:
+        - generic [ref=e52]: Anything else worth noting?
+        - textbox "Optional" [ref=e53]
+  - button "Submit feedback" [ref=e55] [cursor=pointer]
