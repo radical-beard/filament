@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Filament</RootNamespace>
+    <!-- Zero dependencies on purpose: no MoonSharp, no Godot. Just the
+         attributes the generator keys on and the Result/Option/LuaError
+         vocabulary every layer shares. -->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Filament.Core" />
+    <InternalsVisibleTo Include="Filament.Tests" />
+  </ItemGroup>
+
+</Project>

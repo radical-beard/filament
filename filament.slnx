@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/demo/">
+    <Project Path="demo/Filament.Demo.csproj" />
+  </Folder>
+  <Project Path="Filament.Abstractions/Filament.Abstractions.csproj" />
+  <Project Path="Filament.Core/Filament.Core.csproj" />
+  <Project Path="Filament.SourceGen/Filament.SourceGen.csproj" />
+  <Project Path="Filament.Tests/Filament.Tests.csproj" />
+</Solution>

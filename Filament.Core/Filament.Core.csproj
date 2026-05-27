@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Filament</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Pure-managed Lua interpreter (no native deps) — the locked runtime. -->
+    <PackageReference Include="MoonSharp" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Filament.Abstractions\Filament.Abstractions.csproj" />
+    <!-- Generators run at compile time only; the assembly is not linked in. -->
+    <ProjectReference Include="..\Filament.SourceGen\Filament.SourceGen.csproj"
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Filament.Tests" />
+  </ItemGroup>
+
+</Project>
