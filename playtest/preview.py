@@ -4,7 +4,7 @@ temp HTML file for screenshot testing. Run: `python3 preview.py`."""
 import os
 import tempfile
 
-from survey import render_survey
+from survey import render_briefing, render_survey
 
 SAMPLE = [
     {
@@ -60,16 +60,32 @@ SAMPLE = [
 ]
 
 
+BRIEFING = {
+    "whats_new": [
+        "High-seas archipelago with grapple spires",
+        "Kick attack",
+        "Harpoon pull-self traversal",
+        "Cel / edge outline look",
+    ],
+    "controls": [
+        {"keys": "WASD", "action": "Move"},
+        {"keys": "J", "action": "Kick"},
+        {"keys": "Space", "action": "Fire harpoon at a glowing spire to grapple"},
+    ],
+    "note": "Close the game window when you're done — a feedback form will pop up here.",
+}
+
+
 def main():
-    page = render_survey(
-        SAMPLE,
-        title="Crimson Corsair — playtest",
-        intro="You just played the high-seas slice. A few quick questions:",
-    )
-    out = os.path.join(tempfile.gettempdir(), "playtest_preview.html")
-    with open(out, "w") as f:
-        f.write(page)
-    print(out)
+    survey_out = os.path.join(tempfile.gettempdir(), "playtest_preview.html")
+    with open(survey_out, "w") as f:
+        f.write(render_survey(SAMPLE, title="Crimson Corsair — playtest",
+                              intro="You just played the high-seas slice. A few quick questions:"))
+    briefing_out = os.path.join(tempfile.gettempdir(), "playtest_briefing.html")
+    with open(briefing_out, "w") as f:
+        f.write(render_briefing(BRIEFING))
+    print(survey_out)
+    print(briefing_out)
 
 
 if __name__ == "__main__":

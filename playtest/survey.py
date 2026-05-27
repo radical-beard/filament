@@ -1,4 +1,8 @@
-"""Renders the post-play playtest survey as a self-contained HTML page.
+"""Renders the playtest web pages as self-contained HTML.
+
+- `render_briefing(briefing)` — the *pre-play* page: what's new + controls + a
+  "Start" button. Shown before the game launches so the player knows the verbs.
+- `render_survey(questions)` — the *post-play* feedback form.
 
 A question is a dict:
     {
@@ -15,8 +19,13 @@ A question is a dict:
       ]
     }
 
-`render_survey` is a pure function (questions -> HTML string) so it can be
-screenshot-tested without launching anything.
+A briefing is a dict (all keys optional):
+    { "whats_new": ["...", "..."],
+      "controls": [{"keys": "WASD", "action": "Move"}, {"keys": "Space", "action": "Harpoon"}],
+      "note": "free text" }
+
+Both render functions are pure (data -> HTML) so they can be screenshot-tested
+without launching anything.
 """
 
 import html
@@ -24,20 +33,49 @@ import json
 
 
 def render_survey(questions, title="Playtest feedback", intro=""):
-    page = _TEMPLATE
+    page = _SURVEY_TEMPLATE
+    page = page.replace("__STYLE__", _STYLE)
     page = page.replace("__QUESTIONS_JSON__", json.dumps(questions))
     page = page.replace("__TITLE__", html.escape(title))
     page = page.replace("__INTRO__", html.escape(intro))
     return page
 
 
-_TEMPLATE = r"""<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>__TITLE__</title>
-<style>
+def render_briefing(briefing, title="Before you play", intro="What's new in this build, and how to play it:"):
+    briefing = briefing or {}
+    whats = briefing.get("whats_new") or []
+    controls = briefing.get("controls") or []
+    note = briefing.get("note") or ""
+
+    whats_block = ""
+    if whats:
+        items = "".join(f"<li>{html.escape(str(w))}</li>" for w in whats)
+        whats_block = f'<div class="question"><label class="prompt">What’s new</label><ul class="whatsnew">{items}</ul></div>'
+
+    controls_block = ""
+    if controls:
+        rows = "".join(
+            f'<div class="kv"><span class="key">{html.escape(str(c.get("keys", "")))}</span>'
+            f'<span>{html.escape(str(c.get("action", "")))}</span></div>'
+            for c in controls
+        )
+        controls_block = f'<div class="question"><label class="prompt">Controls</label><div class="controls">{rows}</div></div>'
+
+    note_block = ""
+    if note:
+        note_block = f'<div class="question"><p class="intro" style="margin:0">{html.escape(str(note))}</p></div>'
+
+    page = _BRIEFING_TEMPLATE
+    page = page.replace("__STYLE__", _STYLE)
+    page = page.replace("__TITLE__", html.escape(title))
+    page = page.replace("__INTRO__", html.escape(intro))
+    page = page.replace("__WHATS_NEW__", whats_block)
+    page = page.replace("__CONTROLS__", controls_block)
+    page = page.replace("__NOTE__", note_block)
+    return page
+
+
+_STYLE = r"""
   :root {
     --bg: #12161d; --card: #1c232e; --card2: #232c39; --line: #313c4c;
     --text: #e7ebf1; --muted: #93a0b3; --accent: #f0a73a; --accent2: #6ad0c8;
@@ -86,9 +124,67 @@ _TEMPLATE = r"""<!DOCTYPE html>
     font: 600 16px/1 inherit; padding: 14px 34px; cursor: pointer;
   }
   button:hover { filter: brightness(1.07); }
-  .thanks { text-align: center; padding: 60px 0; }
-  .thanks h2 { color: var(--accent2); }
-</style>
+  .thanks, .launching { text-align: center; padding: 60px 0; }
+  .thanks h2, .launching h2 { color: var(--accent2); }
+  .whatsnew { margin: 0; padding-left: 20px; }
+  .whatsnew li { margin: 6px 0; }
+  .controls { display: flex; flex-direction: column; gap: 8px; }
+  .kv {
+    display: flex; align-items: center; gap: 16px; padding: 9px 12px;
+    background: var(--card2); border: 1px solid var(--line); border-radius: 9px;
+  }
+  .key {
+    font-family: ui-monospace, SFMono-Regular, monospace; font-weight: 700;
+    color: var(--accent); min-width: 96px;
+  }
+"""
+
+
+_BRIEFING_TEMPLATE = r"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>__TITLE__</title>
+<style>__STYLE__</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>__TITLE__</h1>
+    <p class="intro">__INTRO__</p>
+    <div id="content">
+      __WHATS_NEW__
+      __CONTROLS__
+      __NOTE__
+    </div>
+    <div id="launching" class="launching hidden">
+      <h2>Launching the game…</h2>
+      <p class="intro">Play, then close the game window — a feedback form will pop up here.</p>
+    </div>
+  </div>
+  <div class="bar" id="bar"><button id="startBtn">Start playtest →</button></div>
+<script>
+document.getElementById('startBtn').addEventListener('click', () => {
+  fetch('/submit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' })
+    .finally(() => {
+      document.getElementById('content').classList.add('hidden');
+      document.getElementById('bar').classList.add('hidden');
+      document.getElementById('launching').classList.remove('hidden');
+    });
+});
+</script>
+</body>
+</html>
+"""
+
+
+_SURVEY_TEMPLATE = r"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>__TITLE__</title>
+<style>__STYLE__</style>
 </head>
 <body>
   <div class="wrap">

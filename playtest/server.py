@@ -7,13 +7,16 @@
 Exposes one blocking tool, `playtest`, so an agent can hand a build to a human
 and *wait* for structured feedback instead of passively handing off:
 
-  1. launch the game (blocking, no timeout) — the human plays and closes it;
-  2. pop a local web survey in the browser (built from the agent's questions);
-  3. block until the human submits;
-  4. return their answers to the agent.
+  1. (optional) show a pre-play briefing page — what's new + controls — and block
+     until the human clicks Start;
+  2. launch the game (blocking, no timeout) — the human plays and closes it;
+  3. pop a local web survey in the browser (built from the agent's questions);
+  4. block until the human submits;
+  5. return their answers to the agent.
 
-The survey is plain web (not Godot), so it supports radio / multiselect / text /
-textarea / number fields and conditional follow-ups, and renders after play.
+The pages are plain web (not Godot): the briefing pops before play, the survey
+after. The survey supports radio / multiselect / text / textarea / number fields
+and conditional follow-ups.
 """
 
 import http.server
@@ -26,7 +29,7 @@ import time
 import webbrowser
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from survey import render_survey  # noqa: E402
+from survey import render_briefing, render_survey  # noqa: E402
 
 from mcp.server.fastmcp import FastMCP  # noqa: E402
 
@@ -39,13 +42,22 @@ def playtest(
     game_command: str = "",
     title: str = "Playtest feedback",
     intro: str = "",
+    briefing: dict | None = None,
 ) -> dict:
     """Run a blocking play-test session and collect structured feedback.
 
-    Launches `game_command` (if given) and blocks with no timeout until the human
-    closes it, then opens a web survey and blocks until they submit. Returns
-    `{"answers": {question_id: value}}` (value is a string, number, or list for
-    multiselect; follow-up answers are keyed by their own id).
+    Flow: (optional) show `briefing` and wait for Start -> launch `game_command`
+    and block with no timeout until the human closes it -> open a web survey and
+    block until they submit. Returns `{"answers": {question_id: value}}` (value is
+    a string, number, or list for multiselect; follow-up answers keyed by their id).
+
+    ALWAYS pass a `briefing` so the player knows the new verbs (otherwise they
+    won't use them). It's a dict, all keys optional:
+      { "whats_new": ["High-seas islands", "Kick attack", "Harpoon grapple"],
+        "controls": [ {"keys": "WASD", "action": "Move"},
+                      {"keys": "J", "action": "Kick"},
+                      {"keys": "Space", "action": "Fire harpoon at a glowing spire"} ],
+        "note": "free text" }
 
     Each question is a dict:
       {
@@ -65,15 +77,21 @@ def playtest(
     Ask about things you cannot verify yourself — i-frame timing, input feel,
     hit confirmation — phrasing the hypothesis so a yes/no + detail is enough.
     """
+    if briefing:
+        _serve_page(render_briefing(briefing))  # blocks until the human clicks Start
+
     if game_command:
         subprocess.run(game_command, shell=True)  # blocks until the game window closes
-    answers = _serve_and_collect(questions, title, intro)
-    return {"answers": answers}
+
+    result = _serve_page(render_survey(questions, title, intro))
+    return {"answers": result.get("answers", {})}
 
 
-def _serve_and_collect(questions: list[dict], title: str, intro: str) -> dict:
-    page = render_survey(questions, title, intro).encode("utf-8")
-    answers: dict = {}
+def _serve_page(page_html: str) -> dict:
+    """Serve a single page, open it in the browser, and block (no timeout) until it
+    POSTs to /submit. Returns the posted JSON body as a dict."""
+    page = page_html.encode("utf-8")
+    posted: dict = {}
     submitted = threading.Event()
 
     class Handler(http.server.BaseHTTPRequestHandler):
@@ -89,8 +107,9 @@ def _serve_and_collect(questions: list[dict], title: str, intro: str) -> dict:
         def do_POST(self):
             length = int(self.headers.get("Content-Length", 0))
             try:
-                data = json.loads(self.rfile.read(length))
-                answers.update(data.get("answers", {}))
+                body = json.loads(self.rfile.read(length))
+                if isinstance(body, dict):
+                    posted.update(body)
             except (ValueError, AttributeError):
                 pass
             self.send_response(200)
@@ -104,10 +123,10 @@ def _serve_and_collect(questions: list[dict], title: str, intro: str) -> dict:
     threading.Thread(target=server.serve_forever, daemon=True).start()
 
     webbrowser.open(f"http://127.0.0.1:{port}/")
-    submitted.wait()      # blocks with no timeout until the human submits
+    submitted.wait()      # blocks with no timeout
     time.sleep(0.4)       # let the response flush to the browser
     server.shutdown()
-    return answers
+    return posted
 
 
 if __name__ == "__main__":
