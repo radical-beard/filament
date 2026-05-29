@@ -37,4 +37,10 @@ internal static class ScriptableDiagnostics
         "use Option<T> instead of a nullable reference for [Scriptable] members",
         "member '{0}' on '{1}' is a nullable reference; model optional values as Option<T> so absence never becomes null",
         Category, DiagnosticSeverity.Warning, isEnabledByDefault: true);
+
+    public static readonly DiagnosticDescriptor MissingReadableMember = new(
+        "FILA0006",
+        "[Scriptable] constructor parameter has no matching readable property",
+        "constructor parameter '{0}' on '{1}' must have a matching readable property so ToLua can marshal it",
+        Category, DiagnosticSeverity.Error, isEnabledByDefault: true);
 }

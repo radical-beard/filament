@@ -71,4 +71,11 @@ public class AnalyzerTests
             "[Scriptable(\"dup\")] public partial record B(int Y);");
         Assert.That(Has(d, "FILA0004"), Is.True);
     }
+
+    [Test]
+    public void MissingReadableMember_FILA0006()
+    {
+        var d = Analyze("[Scriptable] public partial class Bad { public Bad(int x) {} }");
+        Assert.That(Has(d, "FILA0006"), Is.True);
+    }
 }

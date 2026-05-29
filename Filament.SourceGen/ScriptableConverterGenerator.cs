@@ -45,8 +45,12 @@ public sealed class ScriptableConverterGenerator : IIncrementalGenerator
             var shape = TypeAnalysis.Classify(p.Type);
             if (!shape.IsSupported)
                 return new Model(fqn, type.Name, false, ImmutableArray<Field>.Empty); // analyzer reports FILA0002
+            var prop = TypeAnalysis.MatchingProperty(type, p);
+            if (prop is null || prop.GetMethod is null)
+                return new Model(fqn, type.Name, false, ImmutableArray<Field>.Empty); // analyzer reports FILA0006
             fields.Add(new Field(
                 p.Name,
+                prop.Name,
                 p.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
                 TypeAnalysis.ResolveKey(type, p),
                 shape.Wrap, shape.Scalar,
@@ -126,7 +130,7 @@ public sealed class ScriptableConverterGenerator : IIncrementalGenerator
 
     private static void EmitToLuaField(StringBuilder sb, Field f)
     {
-        var read = "value." + f.Param;
+        var read = "value." + f.Member;
         switch (f.Wrap)
         {
             case TypeAnalysis.Wrap.None:
@@ -212,7 +216,7 @@ public sealed class ScriptableConverterGenerator : IIncrementalGenerator
     private static string ElementReadExpr(Field f, string dv, string typeName) => ReadExpr(f, dv, typeName);
 
     private sealed record Field(
-        string Param, string ClrTypeFqn, string Key,
+        string Param, string Member, string ClrTypeFqn, string Key,
         TypeAnalysis.Wrap Wrap, TypeAnalysis.Scalar Scalar, string Inner);
 
     private sealed record Model(string Fqn, string TypeName, bool Valid, ImmutableArray<Field> Fields)

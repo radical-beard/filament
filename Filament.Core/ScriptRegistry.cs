@@ -46,8 +46,15 @@ public sealed class ScriptRegistry : IDisposable
         if (!Directory.Exists(_root))
             return Result.Err(LuaError.RegistryNotReady($"lua root does not exist: {_root}"));
 
+        LuaError? firstError = null;
         foreach (var file in Directory.GetFiles(_root, "*.lua", SearchOption.AllDirectories))
-            LoadOrReload(file, initial: true);
+        {
+            var loadError = LoadOrReload(file, initial: true);
+            firstError ??= loadError;
+        }
+
+        if (firstError is { } err)
+            return Result.Err(err);
 
         if (liveReload) StartWatcher();
         return Result.Ok(Count);
@@ -106,7 +113,7 @@ public sealed class ScriptRegistry : IDisposable
         }
     }
 
-    private void LoadOrReload(string fullPath, bool initial)
+    private LuaError? LoadOrReload(string fullPath, bool initial)
     {
         var logical = Logical(fullPath);
 
@@ -115,7 +122,7 @@ public sealed class ScriptRegistry : IDisposable
             bool removed;
             lock (_lock) removed = _modules.Remove(logical);
             if (removed) Raise(ScriptStatusKind.Removed, logical);
-            return;
+            return null;
         }
 
         string source;
@@ -125,8 +132,9 @@ public sealed class ScriptRegistry : IDisposable
         }
         catch (IOException ex)
         {
-            Raise(ScriptStatusKind.Failed, logical, $"read failed: {ex.Message}");
-            return;
+            var error = LuaError.RuntimeError(logical, "read", $"read failed: {ex.Message}");
+            Raise(ScriptStatusKind.Failed, logical, error.Message);
+            return error;
         }
 
         var script = LuaSandbox.Create();
@@ -134,7 +142,7 @@ public sealed class ScriptRegistry : IDisposable
         if (loaded.TryGetError(out var err))
         {
             Raise(ScriptStatusKind.Failed, logical, err.Message); // last-good chunk stays live
-            return;
+            return err;
         }
         loaded.TryGet(out var table);
 
@@ -152,6 +160,7 @@ public sealed class ScriptRegistry : IDisposable
             lock (_lock) _modules[logical] = module;
             Raise(ScriptStatusKind.Loaded, logical);
         }
+        return null;
     }
 
     private string Logical(string fullPath)
