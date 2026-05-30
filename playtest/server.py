@@ -26,6 +26,7 @@ import subprocess
 import sys
 import threading
 import time
+import tomllib
 import webbrowser
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -40,6 +41,7 @@ mcp = FastMCP("filament-playtest")
 def playtest(
     questions: list[dict],
     game_command: str = "",
+    launch_dir: str = "",
     title: str = "Playtest feedback",
     intro: str = "",
     briefing: dict | None = None,
@@ -47,9 +49,18 @@ def playtest(
     """Run a blocking play-test session and collect structured feedback.
 
     Flow: (optional) show `briefing` and wait for Start -> launch `game_command`
-    and block with no timeout until the human closes it -> open a web survey and
-    block until they submit. Returns `{"answers": {question_id: value}}` (value is
-    a string, number, or list for multiselect; follow-up answers keyed by their id).
+    or the `launch.command` from `launch_dir`/filament.toml, block with no timeout
+    until the human closes it -> open a web survey and block until they submit.
+    Returns `{"answers": {question_id: value}}` (value is a string, number, or
+    list for multiselect; follow-up answers keyed by their id).
+
+    If `game_command` is omitted, pass `launch_dir` as the directory containing
+    a local filament.toml:
+      [launch]
+      command = "dotnet run --project demo/Filament.Demo.csproj"
+
+    The configured command runs with its working directory set to `launch_dir`.
+    Passing `game_command` directly remains supported and overrides the config.
 
     ALWAYS pass a `briefing` so the player knows the new verbs (otherwise they
     won't use them). It's a dict, all keys optional:
@@ -77,14 +88,48 @@ def playtest(
     Ask about things you cannot verify yourself — i-frame timing, input feel,
     hit confirmation — phrasing the hypothesis so a yes/no + detail is enough.
     """
+    resolved_command, resolved_cwd = _resolve_launch(game_command, launch_dir)
+
     if briefing:
         _serve_page(render_briefing(briefing))  # blocks until the human clicks Start
 
-    if game_command:
-        subprocess.run(game_command, shell=True)  # blocks until the game window closes
+    if resolved_command:
+        subprocess.run(
+            resolved_command,
+            shell=True,
+            cwd=resolved_cwd,
+        )  # blocks until the game window closes
 
     result = _serve_page(render_survey(questions, title, intro))
     return {"answers": result.get("answers", {})}
+
+
+def _resolve_launch(game_command: str, launch_dir: str) -> tuple[str, str | None]:
+    """Resolve the command to launch and the directory to launch it from."""
+    cwd = os.path.abspath(os.path.expanduser(launch_dir)) if launch_dir else None
+
+    if game_command:
+        return game_command, cwd
+
+    if not launch_dir:
+        return "", None
+
+    config_path = os.path.join(cwd, "filament.toml")
+    if not os.path.isfile(config_path):
+        raise FileNotFoundError(f"Expected launch config at {config_path}")
+
+    with open(config_path, "rb") as f:
+        config = tomllib.load(f)
+
+    launch = config.get("launch", {})
+    if not isinstance(launch, dict):
+        raise ValueError(f"{config_path}: [launch] must be a table")
+
+    command = launch.get("command", "")
+    if not isinstance(command, str) or not command.strip():
+        raise ValueError(f"{config_path}: [launch].command must be a non-empty string")
+
+    return command, cwd
 
 
 def _serve_page(page_html: str) -> dict:

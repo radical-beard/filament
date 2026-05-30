@@ -1,0 +1,5 @@
+# Filament playtest launch config.
+# Commands are run from the directory containing this file.
+
+[launch]
+command = "dotnet run --project demo/Filament.Demo.csproj"
