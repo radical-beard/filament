@@ -62,4 +62,4 @@ to `playtest/server.py`.
 ## Dev helpers
 
 - `preview.py` — render a sample survey (all field types) to a temp HTML file for screenshotting.
-- `selftest.py` — serve the survey on `:8799` and write a submitted result to `/tmp/playtest_answers.json` (drive with a browser/Playwright to verify the pipeline).
+- `selftest.py` — serve the survey on `:8799` and write a submitted result to the system temp directory (drive with a browser/Playwright to verify the pipeline).

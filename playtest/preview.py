@@ -78,11 +78,11 @@ BRIEFING = {
 
 def main():
     survey_out = os.path.join(tempfile.gettempdir(), "playtest_preview.html")
-    with open(survey_out, "w") as f:
+    with open(survey_out, "w", encoding="utf-8") as f:
         f.write(render_survey(SAMPLE, title="Crimson Corsair — playtest",
                               intro="You just played the high-seas slice. A few quick questions:"))
     briefing_out = os.path.join(tempfile.gettempdir(), "playtest_briefing.html")
-    with open(briefing_out, "w") as f:
+    with open(briefing_out, "w", encoding="utf-8") as f:
         f.write(render_briefing(BRIEFING))
     print(survey_out)
     print(briefing_out)
