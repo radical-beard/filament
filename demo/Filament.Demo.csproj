@@ -7,6 +7,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>Filament.Demo</RootNamespace>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -24,7 +25,9 @@
 
   <!-- Demo Lua scripts copied next to the binary so the registry can watch them. -->
   <ItemGroup>
-    <None Include="lua\**\*.lua" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="lua\**\*.lua"
+          CopyToOutputDirectory="PreserveNewest"
+          TargetPath="lua\%(RecursiveDir)%(Filename)%(Extension)" />
   </ItemGroup>
 
 </Project>

@@ -5,6 +5,7 @@
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <RootNamespace>Filament</RootNamespace>
+    <Description>Shared attributes and result types for Filament Lua scripting.</Description>
     <!-- Zero dependencies on purpose: no MoonSharp, no Godot. Just the
          attributes the generator keys on and the Result/Option/LuaError
          vocabulary every layer shares. -->

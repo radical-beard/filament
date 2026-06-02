@@ -14,3 +14,13 @@ obj/
 coverage/
 *.coverage
 TestResults/
+
+## Local release outputs
+artifacts/
+
+## Python
+__pycache__/
+*.py[cod]
+
+## Playwright / browser inspection artifacts
+playtest/.playwright-cli/

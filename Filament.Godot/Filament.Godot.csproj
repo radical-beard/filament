@@ -8,6 +8,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>Filament</RootNamespace>
+    <Description>Godot 4.6 adapter and value-type marshalling for Filament.</Description>
     <!-- Referenced libraries must ship beside a dynamically-loaded Godot game. -->
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
@@ -21,7 +22,8 @@
     <ProjectReference Include="..\Filament.Core\Filament.Core.csproj" />
     <ProjectReference Include="..\Filament.SourceGen\Filament.SourceGen.csproj"
                       OutputItemType="Analyzer"
-                      ReferenceOutputAssembly="false" />
+                      ReferenceOutputAssembly="false"
+                      PrivateAssets="all" />
   </ItemGroup>
 
 </Project>

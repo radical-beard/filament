@@ -45,14 +45,19 @@ command = "dotnet run --project demo/Filament.Demo.csproj"
 Then call `playtest` with `launch_dir` set to that directory. The configured
 command runs with its working directory set to `launch_dir`.
 
-## Register (needs a Claude Code restart to load)
+## Register
+
+This repository includes a project-level `.mcp.json`:
 
 ```json
 "filament-playtest": {
   "command": "uv",
-  "args": ["run", "--script", "/Users/jaaaacob/workplace/filament/playtest/server.py"]
+  "args": ["run", "--script", "playtest/server.py"]
 }
 ```
+
+If your MCP client does not launch from the repository root, use an absolute path
+to `playtest/server.py`.
 
 ## Dev helpers
 

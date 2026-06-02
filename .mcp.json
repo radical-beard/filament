@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "filament-playtest": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--script",
+        "playtest/server.py"
+      ]
+    }
+  }
+}
