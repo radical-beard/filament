@@ -26,10 +26,10 @@ function Get-ZipEntryNames([string]$PackagePath) {
 & dotnet pack (Join-Path $Root "filament.slnx") -c Release -o $Feed.FullName
 Assert-LastExit "dotnet pack"
 
-$AbstractionsPkg = Join-Path $Feed.FullName "Filament.Abstractions.$Version.nupkg"
-$ConfigPkg = Join-Path $Feed.FullName "Filament.Config.$Version.nupkg"
-$CorePkg = Join-Path $Feed.FullName "Filament.Core.$Version.nupkg"
-$GodotPkg = Join-Path $Feed.FullName "Filament.Godot.$Version.nupkg"
+$AbstractionsPkg = Join-Path $Feed.FullName "RadicalBeard.Filament.Abstractions.$Version.nupkg"
+$ConfigPkg = Join-Path $Feed.FullName "RadicalBeard.Filament.Config.$Version.nupkg"
+$CorePkg = Join-Path $Feed.FullName "RadicalBeard.Filament.Core.$Version.nupkg"
+$GodotPkg = Join-Path $Feed.FullName "RadicalBeard.Filament.Godot.$Version.nupkg"
 $DemoPkg = Join-Path $Feed.FullName "Filament.Demo.$Version.nupkg"
 
 foreach ($Package in @($AbstractionsPkg, $ConfigPkg, $CorePkg, $GodotPkg)) {
@@ -40,10 +40,10 @@ if (Test-Path $DemoPkg) { throw "demo package should not be produced: $DemoPkg" 
 $CoreEntries = Get-ZipEntryNames $CorePkg
 $GodotEntries = Get-ZipEntryNames $GodotPkg
 if ($CoreEntries -notcontains "analyzers/dotnet/cs/Filament.SourceGen.dll") {
-    throw "Filament.Core package is missing the source generator analyzer asset"
+    throw "RadicalBeard.Filament.Core package is missing the source generator analyzer asset"
 }
 if ($GodotEntries -contains "analyzers/dotnet/cs/Filament.SourceGen.dll") {
-    throw "Filament.Godot package should not duplicate the source generator analyzer asset"
+    throw "RadicalBeard.Filament.Godot package should not duplicate the source generator analyzer asset"
 }
 
 $CoreConsumer = New-Item -ItemType Directory -Path (Join-Path ([IO.Path]::GetTempPath()) ("filament-core-consumer-" + [Guid]::NewGuid().ToString("N")))
@@ -77,8 +77,8 @@ public partial record Inp(float HpFraction);
 Push-Location $CoreApp
 try {
     $env:NUGET_PACKAGES = Join-Path $CoreConsumer.FullName "packages"
-    & dotnet add package Filament.Core --version $Version *> $null
-    Assert-LastExit "dotnet add package Filament.Core"
+    & dotnet add package RadicalBeard.Filament.Core --version $Version *> $null
+    Assert-LastExit "dotnet add package RadicalBeard.Filament.Core"
     $CoreOut = & dotnet run
     Assert-LastExit "dotnet run core consumer"
     $CoreOut | ForEach-Object { Write-Host $_ }
@@ -121,8 +121,8 @@ public partial record Spatial(Vector3 Position, Color Tint);
 Push-Location $GodotApp
 try {
     $env:NUGET_PACKAGES = Join-Path $GodotConsumer.FullName "packages"
-    & dotnet add package Filament.Godot --version $Version *> $null
-    Assert-LastExit "dotnet add package Filament.Godot"
+    & dotnet add package RadicalBeard.Filament.Godot --version $Version *> $null
+    Assert-LastExit "dotnet add package RadicalBeard.Filament.Godot"
     & dotnet build -warnaserror
     Assert-LastExit "dotnet build Godot consumer"
     $GodotOut = & dotnet run

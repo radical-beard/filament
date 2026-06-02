@@ -8,7 +8,7 @@ Filament is considered ready to hand to another developer when these gates pass:
   loaded modules and `describe(...)` output without manual intervention.
 - NuGet/package distribution: `scripts/package-smoke.sh` or
   `scripts/package-smoke.ps1` proves package contents and fresh
-  `Filament.Core`/`Filament.Godot` consumers.
+  `RadicalBeard.Filament.Core`/`RadicalBeard.Filament.Godot` consumers.
 - Agent setup: `scripts/agent-smoke.sh` or `scripts/agent-smoke.ps1` validates
   JSON config, Python syntax, and survey rendering.
 - Cross-platform: GitHub Actions runs `scripts/verify.ps1` on Ubuntu, macOS, and

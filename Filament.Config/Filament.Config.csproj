@@ -7,6 +7,7 @@
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <RootNamespace>Filament.Config</RootNamespace>
+    <PackageId>RadicalBeard.Filament.Config</PackageId>
     <Description>TOML world configuration parsing, property access, and diffing for Filament.</Description>
   </PropertyGroup>
 

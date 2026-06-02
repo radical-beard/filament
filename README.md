@@ -4,8 +4,8 @@ Filament is a small .NET framework for data-driven game behavior: C# owns the
 engine boundary, Lua owns fast-iteration behavior logic, and TOML owns world
 configuration.
 
-The repository is ready for source checkout use, local/private NuGet feeds, and
-agent-assisted playtest loops.
+The repository is ready for source checkout use, public NuGet packages,
+local/private NuGet feeds, and agent-assisted playtest loops.
 
 ## What is included
 
@@ -92,8 +92,15 @@ under `res://lua`.
 scripts/package-smoke.sh
 ```
 
-A package consumer should be able to reference `Filament.Core` and immediately
-use `[Scriptable]`; the analyzer/source generator is included in the package.
+A package consumer should be able to add `RadicalBeard.Filament.Core` and
+immediately use `[Scriptable]`; the analyzer/source generator is included in the
+package. Public package IDs use the `RadicalBeard.Filament.*` prefix:
+
+```sh
+dotnet add package RadicalBeard.Filament.Core --version 0.1.0
+```
+
+The C# namespaces remain `Filament` and `Filament.Config`.
 See `docs/distribution.md` for the verification command.
 
 For usage examples, see `docs/package-usage.md`, `docs/scripting.md`, and

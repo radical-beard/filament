@@ -8,6 +8,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>Filament</RootNamespace>
+    <PackageId>RadicalBeard.Filament.Godot</PackageId>
     <Description>Godot 4.6 adapter and value-type marshalling for Filament.</Description>
     <!-- Referenced libraries must ship beside a dynamically-loaded Godot game. -->
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>

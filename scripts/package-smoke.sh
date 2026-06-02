@@ -9,11 +9,11 @@ FEED="$(mktemp -d "${TMPDIR:-/tmp}/filament-pack.XXXXXX")"
 
 dotnet pack "$ROOT/filament.slnx" -c Release -o "$FEED"
 
-CORE_PKG="$FEED/Filament.Core.$VERSION.nupkg"
-GODOT_PKG="$FEED/Filament.Godot.$VERSION.nupkg"
+CORE_PKG="$FEED/RadicalBeard.Filament.Core.$VERSION.nupkg"
+GODOT_PKG="$FEED/RadicalBeard.Filament.Godot.$VERSION.nupkg"
 
-test -f "$FEED/Filament.Abstractions.$VERSION.nupkg"
-test -f "$FEED/Filament.Config.$VERSION.nupkg"
+test -f "$FEED/RadicalBeard.Filament.Abstractions.$VERSION.nupkg"
+test -f "$FEED/RadicalBeard.Filament.Config.$VERSION.nupkg"
 test -f "$CORE_PKG"
 test -f "$GODOT_PKG"
 test ! -f "$FEED/Filament.Demo.$VERSION.nupkg"
@@ -51,7 +51,7 @@ public partial record Inp(float HpFraction);
 EOF
 (
   cd "$CORE_CONSUMER/app"
-  NUGET_PACKAGES="$CORE_CONSUMER/packages" dotnet add package Filament.Core --version "$VERSION" >/dev/null
+  NUGET_PACKAGES="$CORE_CONSUMER/packages" dotnet add package RadicalBeard.Filament.Core --version "$VERSION" >/dev/null
   OUT="$(NUGET_PACKAGES="$CORE_CONSUMER/packages" dotnet run)"
   printf '%s\n' "$OUT"
   grep -qx "True" <<<"$(printf '%s\n' "$OUT" | sed -n '1p')"
@@ -85,7 +85,7 @@ public partial record Spatial(Vector3 Position, Color Tint);
 EOF
 (
   cd "$GODOT_CONSUMER/app"
-  NUGET_PACKAGES="$GODOT_CONSUMER/packages" dotnet add package Filament.Godot --version "$VERSION" >/dev/null
+  NUGET_PACKAGES="$GODOT_CONSUMER/packages" dotnet add package RadicalBeard.Filament.Godot --version "$VERSION" >/dev/null
   NUGET_PACKAGES="$GODOT_CONSUMER/packages" dotnet build -warnaserror
   OUT="$(NUGET_PACKAGES="$GODOT_CONSUMER/packages" dotnet run)"
   printf '%s\n' "$OUT"

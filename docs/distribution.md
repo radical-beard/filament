@@ -59,8 +59,8 @@ Windows/PowerShell:
 ```
 
 The script verifies package contents, confirms `Filament.Demo` is not packaged,
-and builds fresh `Filament.Core` and `Filament.Godot` package consumers with an
-isolated NuGet cache.
+and builds fresh `RadicalBeard.Filament.Core` and
+`RadicalBeard.Filament.Godot` package consumers with an isolated NuGet cache.
 
 The core consumer check is equivalent to:
 
@@ -78,7 +78,7 @@ cat > "$tmp/app/nuget.config" <<EOF
 </configuration>
 EOF
 cd "$tmp/app"
-NUGET_PACKAGES="$tmp/packages" dotnet add package Filament.Core --version 0.1.0
+NUGET_PACKAGES="$tmp/packages" dotnet add package RadicalBeard.Filament.Core --version 0.1.0
 cat > Program.cs <<'EOF'
 using Filament;
 
@@ -98,9 +98,25 @@ True
 
 ## Public release gaps
 
-Before publishing to a public NuGet feed, review:
+Public NuGet package IDs use the `RadicalBeard.Filament.*` prefix:
 
-- Package IDs and ownership.
+- `RadicalBeard.Filament.Abstractions`
+- `RadicalBeard.Filament.Config`
+- `RadicalBeard.Filament.Core`
+- `RadicalBeard.Filament.Godot`
+
+To publish from GitHub Actions, set the repository secret once:
+
+```sh
+gh secret set NUGET_API_KEY --repo radical-beard/filament
+```
+
+Then run the `Publish NuGet` workflow manually or push a tag that matches the
+package version, for example `v0.1.0`. The workflow builds, packs, verifies the
+expected package set, and pushes to `https://api.nuget.org/v3/index.json`.
+
+Before each public release, review:
+
 - Versioning policy.
 - Changelog/release notes.
 - Whether the current all-rights-reserved license file should be replaced with

@@ -67,10 +67,10 @@ static async Task PackageSmoke(DirectoryInfo root)
 
     await Dotnet("pack", P(root, "filament.slnx"), "-c", "Release", "-o", feed.FullName);
 
-    var abstractions = P(feed, $"Filament.Abstractions.{version}.nupkg");
-    var config = P(feed, $"Filament.Config.{version}.nupkg");
-    var core = P(feed, $"Filament.Core.{version}.nupkg");
-    var godot = P(feed, $"Filament.Godot.{version}.nupkg");
+    var abstractions = P(feed, $"RadicalBeard.Filament.Abstractions.{version}.nupkg");
+    var config = P(feed, $"RadicalBeard.Filament.Config.{version}.nupkg");
+    var core = P(feed, $"RadicalBeard.Filament.Core.{version}.nupkg");
+    var godot = P(feed, $"RadicalBeard.Filament.Godot.{version}.nupkg");
     var demo = P(feed, $"Filament.Demo.{version}.nupkg");
 
     RequireFile(abstractions);
@@ -82,9 +82,9 @@ static async Task PackageSmoke(DirectoryInfo root)
     var coreEntries = ZipEntries(core);
     var godotEntries = ZipEntries(godot);
     if (!coreEntries.Contains("analyzers/dotnet/cs/Filament.SourceGen.dll"))
-        throw new InvalidOperationException("Filament.Core package is missing Filament.SourceGen analyzer asset");
+        throw new InvalidOperationException("RadicalBeard.Filament.Core package is missing Filament.SourceGen analyzer asset");
     if (godotEntries.Contains("analyzers/dotnet/cs/Filament.SourceGen.dll"))
-        throw new InvalidOperationException("Filament.Godot package should not duplicate Filament.SourceGen");
+        throw new InvalidOperationException("RadicalBeard.Filament.Godot package should not duplicate Filament.SourceGen");
 
     await CorePackageConsumer(feed, version);
     await GodotPackageConsumer(feed, version);
@@ -112,7 +112,7 @@ static async Task CorePackageConsumer(DirectoryInfo feed, string version)
         """);
 
     var env = new Dictionary<string, string> { ["NUGET_PACKAGES"] = P(consumer, "packages") };
-    await DotnetIn(app, env, "add", "package", "Filament.Core", "--version", version);
+    await DotnetIn(app, env, "add", "package", "RadicalBeard.Filament.Core", "--version", version);
     var output = await DotnetCaptureIn(app, env, "run");
     var lines = SignificantLines(output);
     if (lines.ElementAtOrDefault(0) != "True")
@@ -142,7 +142,7 @@ static async Task GodotPackageConsumer(DirectoryInfo feed, string version)
         """);
 
     var env = new Dictionary<string, string> { ["NUGET_PACKAGES"] = P(consumer, "packages") };
-    await DotnetIn(app, env, "add", "package", "Filament.Godot", "--version", version);
+    await DotnetIn(app, env, "add", "package", "RadicalBeard.Filament.Godot", "--version", version);
     await DotnetIn(app, env, "build", "-warnaserror");
     var output = await DotnetCaptureIn(app, env, "run");
     var lines = SignificantLines(output);
