@@ -65,6 +65,40 @@ Windows or any machine with PowerShell 7:
 These run the same .NET verifier: build, format check, tests, demo smoke,
 playtest-agent smoke, package packing, and fresh package-consumer checks.
 
+## Use from NuGet
+
+Install the package that matches the layer your project needs:
+
+```sh
+dotnet add package RadicalBeard.Filament.Core --version 0.1.0
+```
+
+Use `RadicalBeard.Filament.Core` for engine-free Lua behavior scripting. It
+includes the `[Scriptable]` analyzer/source generator, so package consumers do
+not reference `Filament.SourceGen` directly.
+
+```sh
+dotnet add package RadicalBeard.Filament.Config --version 0.1.0
+```
+
+Add `RadicalBeard.Filament.Config` when you need TOML world files, normalized
+entity props, typed prop access, or world diffs.
+
+```sh
+dotnet add package RadicalBeard.Filament.Godot --version 0.1.0
+```
+
+Use `RadicalBeard.Filament.Godot` for Godot 4.6 .NET projects. It depends on
+`RadicalBeard.Filament.Core`, so the source generator arrives once through the
+package graph.
+
+The C# namespaces remain `Filament` and `Filament.Config`:
+
+```csharp
+using Filament;
+using Filament.Config;
+```
+
 ## Use from a source checkout
 
 For a game or tool in the same repository, reference the runtime project you
@@ -92,15 +126,6 @@ under `res://lua`.
 scripts/package-smoke.sh
 ```
 
-A package consumer should be able to add `RadicalBeard.Filament.Core` and
-immediately use `[Scriptable]`; the analyzer/source generator is included in the
-package. Public package IDs use the `RadicalBeard.Filament.*` prefix:
-
-```sh
-dotnet add package RadicalBeard.Filament.Core --version 0.1.0
-```
-
-The C# namespaces remain `Filament` and `Filament.Config`.
 See `docs/distribution.md` for the verification command.
 
 For usage examples, see `docs/package-usage.md`, `docs/scripting.md`, and
