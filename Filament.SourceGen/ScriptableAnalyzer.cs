@@ -15,7 +15,8 @@ public sealed class ScriptableAnalyzer : DiagnosticAnalyzer
         ScriptableDiagnostics.UnsupportedMemberType,
         ScriptableDiagnostics.NoUsableConstructor,
         ScriptableDiagnostics.DuplicateName,
-        ScriptableDiagnostics.UseOptionNotNullable);
+        ScriptableDiagnostics.UseOptionNotNullable,
+        ScriptableDiagnostics.MissingReadableMember);
 
     public override void Initialize(AnalysisContext context)
     {
@@ -79,6 +80,13 @@ public sealed class ScriptableAnalyzer : DiagnosticAnalyzer
         {
             var memberLoc = p.Locations.FirstOrDefault() ?? location;
             var shape = TypeAnalysis.Classify(p.Type);
+            var prop = TypeAnalysis.MatchingProperty(type, p);
+
+            if (prop is null || prop.GetMethod is null)
+            {
+                ctx.ReportDiagnostic(Diagnostic.Create(
+                    ScriptableDiagnostics.MissingReadableMember, memberLoc, p.Name, type.Name));
+            }
 
             if (!shape.IsSupported)
             {

@@ -93,6 +93,23 @@ public class HotReloadTests
         finally { Cleanup(dir); }
     }
 
+    [Test]
+    public void Registry_InitialParseError_ReturnsErr()
+    {
+        var dir = TempDir();
+        try
+        {
+            File.WriteAllText(Path.Combine(dir, "bad.lua"), "this is not valid lua {{{ ");
+
+            using var reg = new ScriptRegistry(dir);
+            var result = reg.Initialize(liveReload: false);
+
+            Assert.That(result.IsErr, Is.True);
+            Assert.That(reg.Count, Is.EqualTo(0));
+        }
+        finally { Cleanup(dir); }
+    }
+
     private static string TempDir()
     {
         var dir = Path.Combine(Path.GetTempPath(), "filament_hr_" + Guid.NewGuid().ToString("N"));
